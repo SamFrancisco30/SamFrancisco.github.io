@@ -7,7 +7,7 @@ keywords: Jekyll, GitHub Pages
 topmost: true
 ---
 
-使用这个博客模板的朋友们时不时会提出一些问题，我将它们以及对应的解决方案逐渐整理归纳，汇总到这一篇帖子里。
+这是我的置顶blog
 
 ## 如何本地预览
 
