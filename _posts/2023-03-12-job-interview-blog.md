@@ -4,10 +4,11 @@ title: 求职复盘
 categories: Jobs
 description: 记录从2023开始的找实习，找工历程
 keywords: 面试, 求职
+excerpt: 回顾一下自己 2023 年找暑期实习的历程及面试内容，以供参考总结
 topmost: true
 ---
 
-回顾一下自己 2023 年找暑期实习的历程及面试内容，以供参考总结
+
 
 <!--more-->
 ## 阿里 - 对象存储
