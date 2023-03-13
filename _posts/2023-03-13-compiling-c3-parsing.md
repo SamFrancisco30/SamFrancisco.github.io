@@ -29,4 +29,10 @@ sum = (digits "+")* digits
 
 #### 解释：
 **Terminal**其实就是该language的字符表中具有确定意思的token，terminal只能出现在production的右侧
-**Non-terminals**其实就是该language的字符表中具有确定意思的token，terminal只能出现在production的右侧
+
+**Non-terminals**是意义并未确定的符号，它可以出现在production的两侧，还可以继续进行后续迭代（在production的左侧）
+
+**Production**是 CFG 描述语言的形式，它的形式为: "symbol -> symbol symbol ... symbol", 意思是左侧的符号可以被右边的替换
+
+### CFG描述语言的过程：
+从一个start symbol出发，当还有任何non-terminal存在的时候，使用一个production来替换它，重复直到剩下的全是terminal
