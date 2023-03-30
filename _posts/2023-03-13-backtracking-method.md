@@ -38,18 +38,36 @@ backtracking：纵向遍历，树的深度加深
 
 ## 组合问题
 ### N个元素中选K个
+图示：
+![](2023-03-30-22-00-55.png)
 ```
 vector<vector<int>> result; // 存放符合条件结果的集合
 vector<int> path; // 用来存放符合条件结果
-void backtracking(int n, int k, int startIndex) {
+void backtracking(int n, int k, int start) {
     if (path.size() == k) {
         result.push_back(path);
         return;
     }
-    for (int i = startIndex; i <= n; i++) {
+    for (int i = start; i <= n; i++) {
         path.push_back(i); // 处理节点
         backtracking(n, k, i + 1); // 递归
         path.pop_back(); // 回溯，撤销处理的节点
     }
 }
+```
+
+### 剪枝优化
+为什么要优化：有时候for循环中从start开始处之后的元素个数已经不足了，即使全部选完也不够K个
+
+需要优化的部分：
+```
+for (int i = start; i <= n; i++)
+```
+
+已经选择的元素个数：`path.size()`
+还需要的元素个数：`k - path,size()`
+
+优化之后的for循环：
+```
+for (int i = start; i <= n - (k - path.size()) + 1; i++) 
 ```
