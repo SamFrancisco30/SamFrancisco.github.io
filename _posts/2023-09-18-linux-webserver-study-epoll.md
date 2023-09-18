@@ -1,9 +1,9 @@
 ---
 layout: post
-title: 《Linux高性能服务器编程》 学习笔记：Select, Poll and Epoll
+title: 《Linux高性能服务器编程》 学习笔记二：Select, Poll and Epoll
 categories: Web
 description: 《Linux高性能服务器编程》 学习笔记
-keywords: Linux Web Server
+keywords: Linux Web Epoll
 excerpt: 记录对《Linux高性能服务器编程》 的学习笔记
 ---
 
