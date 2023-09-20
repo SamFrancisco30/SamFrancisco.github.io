@@ -193,6 +193,8 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 
 * `timeout`: 超时值
 
+`epoll_wait`成功时返回就绪的fd的个数;失败时返回-1并设置errno
+
 ## LT和ET
 LT和ET(Level-Triggered vs Edge-Triggered)是两种事件通知机制，这两种模式决定了`epoll_wait`在什么时候通知fd就绪
 
@@ -209,3 +211,54 @@ epoll_ctl(epoll_fd, EPOLL_CTL_ADD, some_fd, &event);
 ```
 
 ET模式是epoll的高效工作模式，ET模式下，`epoll_wait`仅仅在检测到fd上的事件发生（注册的条件由false变为true）的时候会通知应用程序，然后应用程序必须尽快处理该事件，因为之后这一事件就不会再次被通知了
+
+## 一个例子
+```
+#include <iostream>
+#include <sys/epoll.h>
+#include <unistd.h>
+#include <cstring>
+
+int main() {
+    // Create an epoll instance
+    int epoll_fd = epoll_create1(0);
+    if (epoll_fd == -1) {
+        std::cerr << "Failed to create epoll instance: " << strerror(errno) << std::endl;
+        return 1;
+    }
+
+    // Register stdin (file descriptor 0) with the epoll instance
+    epoll_event event;
+    event.events = EPOLLIN;  // Monitor for data to read
+    event.data.fd = STDIN_FILENO;  // Monitoring stdin
+
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, STDIN_FILENO, &event) == -1) {
+        std::cerr << "Failed to add file descriptor to epoll: " << strerror(errno) << std::endl;
+        return 1;
+    }
+
+    // Create an array to hold returned events
+    epoll_event events[10];
+
+    // Wait for events with a 5-second timeout
+    int num_fds = epoll_wait(epoll_fd, events, 10, 5000);
+
+    if (num_fds == -1) {
+        std::cerr << "epoll_wait failed: " << strerror(errno) << std::endl;
+        return 1;
+    } else if (num_fds == 0) {
+        std::cout << "No data within 5 seconds." << std::endl;
+    } else {
+        for (int i = 0; i < num_fds; ++i) {
+            if (events[i].data.fd == STDIN_FILENO) {
+                std::cout << "Data is ready to read from stdin." << std::endl;
+            }
+        }
+    }
+
+    // Close the epoll instance
+    close(epoll_fd);
+
+    return 0;
+}
+```
