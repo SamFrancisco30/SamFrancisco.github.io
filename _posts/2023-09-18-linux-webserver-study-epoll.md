@@ -147,9 +147,11 @@ int epoll_create1(int flags);
 *设置EPOLL_CLOEXEC的好处是可以避免出现fd资源被浪费的情况以及可能的安全问题，例如，当一个程序调用了epoll_create，然后fork了一个新进程，这时如果没有设置EPOLL_CLOEXEC那么父进程和子进程都能访问到这个epoll instance，即使子进程用了exec来替换了自己的image（这时候按道理子进程不应该可以访问到这个fd了）*
 
 ### 操作内核事件表：`epoll_ctl`
+`epoll_ctl`函数定义如下：
 ```
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 ```
+
 * `epfd`: 要操作的这个内核事件表的fd
 
 * `op`: 操作类型，有以下几种：
