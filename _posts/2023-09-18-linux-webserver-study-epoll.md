@@ -191,3 +191,18 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 * `timeout`: 超时值
 
 ### LT和ET
+LT和ET(Level-Triggered vs Edge-Triggered)是两种事件通知机制，这两种模式决定了`epoll_wait`在什么时候通知fd就绪
+
+#### Level-Triggered (LT)
+LT模式是epoll的默认工作模式，这种模式下epoll相当于一个高效率的poll，`epoll_wait`会在注册的条件满足时持续通知应用程序这一fd就绪了，此时应用程序可以不立即处理该事件，这样一来，下一次调用`epoll_wait`时该事件还会被再次通知，直到这一事件被处理，因此这可能会造成busy loop和高CPU使用，效率较低
+
+#### Edge-Triggered (ET)
+通过注册一个EPOLLET事件来使用ET模式来操作某个fd，例如：
+```
+struct epoll_event event;
+event.events = EPOLLIN | EPOLLET;  // Edge-Triggered for read events
+event.data.fd = some_fd;
+epoll_ctl(epoll_fd, EPOLL_CTL_ADD, some_fd, &event);
+```
+
+ET模式是epoll的高效工作模式，ET模式下，`epoll_wait`仅仅在检测到fd上的事件发生（注册的条件由false变为true）的时候会通知应用程序，然后应用程序必须尽快处理该事件，因为之后这一事件就不会再次被通知了
