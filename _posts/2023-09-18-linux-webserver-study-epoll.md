@@ -180,6 +180,18 @@ typedef union epoll_data {
 
 `epoll_ctl`成功时返回0;失败时返回-1并设置errno
 
+#### 几种events
+events可以是以下几个宏的集合：
+* `EPOLLIN` ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；
+* `EPOLLOUT`：表示对应的文件描述符可以写；
+* `EPOLLPRI`：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
+* `EPOLLERR`：表示对应的文件描述符发生错误；
+* `EPOLLHUP`：表示对应的文件描述符被挂断；
+* `EPOLLET`： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
+* `EPOLLONESHOT`：对于设置了该flag的fd，当一次事件被触发后，这一fd不会再被触发，除非使用`epoll_ctl`重置这一fd上注册了这一flag的事件
+
+*若没有`EPOLLONESHOT`这一flag，会出现一种情况，例如epoll_wait检测到某个fd可读，通知应用程序用一个线程去处理这一fd的数据，在处理过程中这一fd又可能再次可读，于是另一个线程被唤醒去处理同一个fd，造成竞争现象*
+
 ## 主要函数：`epoll_wait`
 epoll_wait()会在一段超时时间内等待一组fd上的事件，其函数定义如下：
 ```
