@@ -182,7 +182,8 @@ epoll_wait()会在一段超时时间内等待一组fd上的事件，其函数定
 ```
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
 ```
-* `额皮肤的`: 要操作的这个内核事件表的fd
+
+* `epfd`: 要操作的这个内核事件表的fd
 
 * `events`: 指向一个`epoll_event`结构体的数组。由kernel来填充，当`epoll_wait`检测到事件时就将就绪的事件从内核事件表（epfd）中复制到这个数组中，所以这个参数其实只是用于输出结果（就绪的事件）的
 
