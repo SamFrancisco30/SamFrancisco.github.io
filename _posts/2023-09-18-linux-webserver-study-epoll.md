@@ -131,7 +131,7 @@ int main() {
 ## 内核事件表
 储存用户关心的fd及其上的事件，这个表本质上就是一个文件，因此表本身需要一个额外的fd来标识。
 
-创建内核事件表：`epoll_create` 和 `epoll_create1`
+### 创建内核事件表：`epoll_create` 和 `epoll_create1`
 
 ```
 int epoll_create(int size);
@@ -146,7 +146,7 @@ int epoll_create1(int flags);
 
 *设置EPOLL_CLOEXEC的好处是可以避免出现fd资源被浪费的情况以及可能的安全问题，例如，当一个程序调用了epoll_create，然后fork了一个新进程，这时如果没有设置EPOLL_CLOEXEC那么父进程和子进程都能访问到这个epoll instance，即使子进程用了exec来替换了自己的image（这时候按道理子进程不应该可以访问到这个fd了）*
 
-操作内核事件表：`epoll_ctl`
+### 操作内核事件表：`epoll_ctl`
 `epoll_ctl`函数定义如下：
 ```
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
