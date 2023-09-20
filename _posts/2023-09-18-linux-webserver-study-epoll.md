@@ -124,3 +124,70 @@ int main() {
     return 0;
 }
 ```
+
+# epoll系统调用
+与select和poll的不同在于，epoll需要使用多个函数来完成操作
+
+## 内核事件表
+储存用户关心的fd及其上的事件，这个表本质上就是一个文件，因此表本身需要一个额外的fd来标识。
+
+### 创建内核事件表：`epoll_create` 和 `epoll_create1`
+
+```
+int epoll_create(int size);
+```
+* `size`: 给内核提示这个表有多大，现在这个参数基本没用了
+
+```
+int epoll_create1(int flags);
+```
+
+* `flags`: 用于控制创建出的表：设置为0时和`epoll_create`相同;设置为`EPOLL_CLOEXEC`时会设置这个fd的close-on-exec (FD_CLOEXEC) flag，表示这个epoll的fd会在新的程序通过exec系syscall（execv, execp, execle等）执行时自动关闭
+
+*设置EPOLL_CLOEXEC的好处是可以避免出现fd资源被浪费的情况以及可能的安全问题，例如，当一个程序调用了epoll_create，然后fork了一个新进程，这时如果没有设置EPOLL_CLOEXEC那么父进程和子进程都能访问到这个epoll instance，即使子进程用了exec来替换了自己的image（这时候按道理子进程不应该可以访问到这个fd了）*
+
+### 操作内核事件表：`epoll_ctl`
+```
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+```
+* `epfd`: 要操作的这个内核事件表的fd
+
+* `op`: 操作类型，有以下几种：
+
+    1. `EPOLL_CTL_ADD`：注册fd上的事件
+    2. `EPOLL_CTL_MOD`：修改fd上注册了的事件
+    3. `EPOLL_CTL_DEL`：删除fd上注册了的事件
+
+* `fd`: 要操作的fd
+
+* `event`: 指向`epoll_event`结构体的一个指针。表示想要在fd上监听的事件
+```
+struct epoll_event {
+    uint32_t     events;      /* Epoll events */
+    epoll_data_t data;        /* User data variable */
+};
+
+typedef union epoll_data {
+    void        *ptr;
+    int          fd;
+    uint32_t     u32;
+    uint64_t     u64;
+} epoll_data_t;
+```
+
+`epoll_ctl`成功时返回0;失败时返回-1并设置errno
+
+### 主要函数：`epoll_wait`
+epoll_wait()会在一段超时时间内等待一组fd上的事件，其函数定义如下：
+```
+int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+```
+* `额皮肤的`: 要操作的这个内核事件表的fd
+
+* `events`: 指向一个`epoll_event`结构体的数组。由kernel来填充，当`epoll_wait`检测到事件时就将就绪的事件从内核事件表（epfd）中复制到这个数组中，所以这个参数其实只是用于输出结果（就绪的事件）的
+
+* `maxevents`: 指定最多监听多少事件，也就是`events`数组的大小
+
+* `timeout`: 超时值
+
+### LT和ET
