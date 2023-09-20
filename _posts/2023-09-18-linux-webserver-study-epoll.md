@@ -177,7 +177,7 @@ typedef union epoll_data {
 
 `epoll_ctl`成功时返回0;失败时返回-1并设置errno
 
-### 主要函数：`epoll_wait`
+## 主要函数：`epoll_wait`
 epoll_wait()会在一段超时时间内等待一组fd上的事件，其函数定义如下：
 ```
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
@@ -190,13 +190,13 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 
 * `timeout`: 超时值
 
-### LT和ET
+## LT和ET
 LT和ET(Level-Triggered vs Edge-Triggered)是两种事件通知机制，这两种模式决定了`epoll_wait`在什么时候通知fd就绪
 
-#### Level-Triggered (LT)
+### Level-Triggered (LT)
 LT模式是epoll的默认工作模式，这种模式下epoll相当于一个高效率的poll，`epoll_wait`会在注册的条件满足时持续通知应用程序这一fd就绪了，此时应用程序可以不立即处理该事件，这样一来，下一次调用`epoll_wait`时该事件还会被再次通知，直到这一事件被处理，因此这可能会造成busy loop和高CPU使用，效率较低
 
-#### Edge-Triggered (ET)
+### Edge-Triggered (ET)
 通过注册一个EPOLLET事件来使用ET模式来操作某个fd，例如：
 ```
 struct epoll_event event;
