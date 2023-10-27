@@ -16,25 +16,19 @@ excerpt: 记录对《Linux高性能服务器编程》 的学习笔记
 # Reactor模式
 同步I/O模式用于实现Reactor模式，Reactor要求主线程（I/O处理单元）只负责监听fd上是否有事件发生，有则立即将事件通知给工作线程，此外主线程不做任何其他实质性的事情。
 
+Reactor模式含义：I/O 多路复用监听事件，收到事件后，根据事件类型分配（Dispatch）给某个进程 / 线程
+
+Reactor模式的两个核心部分：
+* Reactor：负责监听和分发事件
+* 处理资源池：负责处理事件
+
 ## 实现Reactor的工作流程（以epoll_wait）为例
-```
-#include <sys/select.h>
-int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
-```
-* `nfds`:用于指定被监听的文件描述符的总数
-* `readfds`: 指向想要检查可读性的文件描述符的集合
-* `writefds`: 指向想要检查可写性的文件描述符的集合
-* `exceptfds`: 指向想要检查异常的文件描述符的集合
-
-*这三个集合可以通过宏 FD_SET, FD_CLR, FD_ISSET, 和 FD_ZERO来设置，kernel会修改它们来告知哪些文件描述符已经就绪*
-* `timeout`: 一个指向timeval结构体的指针，表示超时时间，设置成NULL的话select会一直阻塞直到否个文件描述符就绪
-
-*kernel会修改它来告知select等待了多久*
-
-select返回值：
-* 成功时返回就绪的文件描述符总数
-* 超时并且没有文件描述符就绪返回0
-* 失败时返回-1并设置errno
+1. 主线程向epoll事件表中注册socket上的read就绪事件并调用epoll_wait，等待socket有数据可读;
+2. socket有数据可读时，epoll_wait通知主线程，主线程将这一可读事件放入请求队列;
+3. 某个在请求队列上sleep的工作线程被唤醒，它从socket中读数据，处理客户请求，然后向epoll注册write就绪事件;
+4. 主线程调用epoll_wait等待socket可写;
+5. socket可写时，epoll_wait通知主线程，主线程将这一可写事件放入请求队列;
+6. 某个在请求队列上sleep的工作线程被唤醒，它向socket上写入数据。
 
 ## 一个例子
 ```
