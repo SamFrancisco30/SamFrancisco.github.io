@@ -1,7 +1,7 @@
 ---
 layout: post
 title: C++ 学习笔记： cross-class callbacks, std::bind and Lambda expression
-categories: Web
+categories: C++
 description: C++ 学习笔记： cross-class callbacks, std::bind and Lambda expression
 keywords: C++ std::bind Lambda
 excerpt: C++ 学习笔记： cross-class callbacks, std::bind and Lambda expression
