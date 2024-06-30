@@ -39,7 +39,7 @@ backtracking：纵向遍历，树的深度加深
 ## 组合问题
 ### N个元素中选K个
 图示：
-![](2023-03-30-22-00-55.png)
+![](/images/2023-03-30-22-00-55.png)
 ```
 vector<vector<int>> result; // 存放符合条件结果的集合
 vector<int> path; // 用来存放符合条件结果
