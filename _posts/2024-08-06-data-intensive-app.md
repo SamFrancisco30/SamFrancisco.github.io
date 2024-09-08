@@ -367,12 +367,17 @@ server按照以下步骤进行选举：
 *Raft采用随机election timeout的方式来确保平局的状况很少发生*
 
 #### 节点如何响应RequestVote RPC
-投票给candidate：该节点尚未vote，且candidate的日志比自己的日志更新；
+投票给candidate：先检查任期，只有在candidate的任期大于本节点的任期时才会投票；然后检查log是否最新。
+
+检查log是否最新的步骤：首先比较最后一个log entry的任期，若candidate的最后一个log entry的任期更大，则投票；若二者相等，则比较最后一个log entry的index，若candidate的index更大则投票。
 
 拒绝投票：该节点已经vote过了/candidate的term value小于该节点当前的term value
 
 ### Log replication
 log replication的目标是使raft集群中的所有节点（leader和followers）在其日志中拥有相同的日志条目顺序和内容，从而保证整个系统的一致性。
+
+#### Log entry
+Raft 中的日志条目代表了在集群节点间复制的单个操作（通常是客户端请求）。 每个日志条目都包含重要的元数据，可让 Raft 在整个集群中保持一致的状态。
 
 #### 基本流程
 1. 客户端向leader发出写请求（添加、修改数据等）
