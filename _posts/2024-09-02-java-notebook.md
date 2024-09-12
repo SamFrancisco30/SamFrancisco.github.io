@@ -44,6 +44,52 @@ int[] arr = {5, 2, 9, 1, 5, 6};
 Arrays.sort(arr, Collections.reverseOrder());
 ```
 
+# 双端队列deque
+## deque初始化
+```
+Deque<Integer> deque = new ArrayDeque<>();
+```
+
+## 插入元素
+```
+deque.addFirst(element);
+deque.addLast(element);
+```
+
+## 移除元素
+```
+deque.pollFirst(); // or deque.removeFirst();
+deque.pollLast(); // or deque.removeLast();
+```
+
+## 访问头尾元素
+```
+deque.peekFirst();
+deque.peekLast();
+```
+
+## 用途
+在一些题目中，我们需要记录一个滑动窗口里的数值的最大/最小值，此时可以利用deque构造一个单调队列
+
+### maximum deque
+1. 添加元素前，**从队尾**不断移除比新元素小的元素
+2. 添加新元素**到队尾**
+3. 最大的元素在**队头**
+
+e.g.
+```
+while (!deque.isEmpty() && deque.peekLast() <= newElement) {
+    deque.pollLast();
+}
+deque.addLast(newElement);
+
+// 队头元素即为当前窗口的最大值
+int maxValue = deque.peekFirst();
+```
+
+*注意：当移动窗口的左边界时，需要检查队头的元素是否已经不在窗口内，并在必要时从队头移除。*
+
+
 # Finally
 在Java中，finally 关键字用于创建一个代码块，它跟在一个try块之后，可选地跟在一个或多个catch块之后。无论try块内发生什么情况（是否发生异常），finally 块中的代码几乎总是会被执行。finally块通常用于清理资源，比如关闭文件、释放内存、释放锁等，以确保这些代码无论正常逻辑还是异常处理都能得到执行。
 
