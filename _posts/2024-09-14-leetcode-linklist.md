@@ -145,3 +145,40 @@ class Solution {
 
 ## Dummy Head
 上述两个例子中都创建了一个dummy head，这是因为对于单链表，要删除/增加一个节点需要知道其前驱节点，但是头节点不存在前驱节点，所以可以加一个dummy head来作为头节点的前驱节点
+
+# 反转链表
+## 迭代式写法
+每遍历到一个节点就将其next指向前一个节点
+```
+public ListNode reverseList(ListNode head) {
+    ListNode cur = head;
+    ListNode pre = null;
+    while(cur!=null){
+        ListNode tmp = cur.next;
+        cur.next = pre;
+        pre = cur;
+        cur = tmp;
+    }
+    return pre;
+}
+```
+
+## 递归式写法
+```
+public ListNode reverseList(ListNode head) {
+    // Base case
+    if(head==null || head.next==null){
+        return head;
+    }
+
+    // 假设从head.next开始的后续链表已经反转完成，获取到新的头节点
+    ListNode newHead = reverseList(head.next);
+
+    // 剩下的head需要加入后面的反转好了的链表中
+    head.next.next = head;
+    head.next = null;
+
+    // 返回新的头节点
+    return newHead;
+}
+```
