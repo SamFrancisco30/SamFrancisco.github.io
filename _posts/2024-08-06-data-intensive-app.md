@@ -387,7 +387,7 @@ Raft 中的日志条目代表了在集群节点间复制的单个操作（通常
 
 3. leader通过AppendEntries RPC来复制该log entry到所有follower节点，保证日志的顺序性和一致性
 
-4. follower收到RPC后检查前一个entry的索引和term value和自己的log里面对应的entry是否匹配。若匹配则将新的entry追加到log中并返回成功消息给leader，否咋拒绝该entry，而leader会发送更前面一个log entry，直到匹配上
+4. follower收到RPC后检查前一个entry的索引和term value和自己的log里面对应的entry是否匹配。若匹配则将新的entry追加到log中并返回成功消息给leader，否则拒绝该entry，而leader会发送更前面一个log entry，直到匹配上
 
 5. 当leader确认一个log entry已经被超过半数的follower成功复制后，标记该log entry的状态为committed，随后应用该entry到其状态机中，并返回结果给客户端；follower收到leader的commit后也会做同样的事情
 
