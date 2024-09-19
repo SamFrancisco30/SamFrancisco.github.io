@@ -43,6 +43,8 @@ public boolean hasCycle(ListNode head) {
 
 空间复杂度：O(1)
 
+**快慢指针也可以用于寻找别的数据结构中的重复元素**，如数组。见LeetCode 287， 202
+
 # 寻找环形链表入环处
 同样可以使用哈希表
 
