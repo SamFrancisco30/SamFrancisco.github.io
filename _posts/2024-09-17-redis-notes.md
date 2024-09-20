@@ -28,3 +28,10 @@ String（字符串）、Hash（哈希）、List（列表）、Set（集合） �
 2. 是二进制安全的，可以存储任何二进制数据，比如图片、音频文件等，最长可以达到 **512MB**
 3. 可以使用 INCR、DECR、INCRBYFLOAT 这类命令直接对存储的整数或浮点数进行加减运算
 
+### 批量设置多个key-value对
+```
+MSET name "Alice" age "30" city "New York"
+```
+
+*注意：MSET 是一种原子操作，这意味着所有的 key-value 对要么同时设置成功，要么同时失败*
+
