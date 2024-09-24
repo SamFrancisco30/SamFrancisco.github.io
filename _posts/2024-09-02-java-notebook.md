@@ -19,12 +19,15 @@ int[] arr = {1, 2, 3, 4, 5};
         }
 ```
 
-## 修改所有元素：`Arrays.setAll()`
+## 修改所有元素：`Arrays.setAll()`或者 `Arrays.fill()`
 ```
 int[] arr = {1, 2, 3, 4, 5};
         
 // Modify array elements using Arrays.setAll
 Arrays.setAll(arr, i -> arr[i] * 2);
+
+// Or fill it with a constant value
+Arrays.fill(arr, -1);
 ```
 
 ## 数组排序：`Arrays.sort()`
@@ -71,6 +74,8 @@ deque.peekLast();
 ## 用途
 在一些题目中，我们需要记录一个滑动窗口里的数值的最大/最小值，此时可以利用deque构造一个单调队列
 
+例如，如果想记录最大值，就构造一个单调递减队列，使得队头的元素最大
+
 ### maximum deque
 1. 添加元素前，**从队尾**不断移除比新元素小的元素
 2. 添加新元素**到队尾**
@@ -88,6 +93,78 @@ int maxValue = deque.peekFirst();
 ```
 
 *注意：当移动窗口的左边界时，需要检查队头的元素是否已经不在窗口内，并在必要时从队头移除。*
+
+### stack
+也可以将Deque用作栈，使用传统的push/pop/peek方法
+
+# 字符串相关
+Java中字符串相关类型有3种：String，StringBuilder和StringBuffer。其中，String不可变，其余两种是可变字符串，但是StringBuilder线程不安全
+## String
+String类存储字符串的方式是通过char型数组存储：
+```
+public final class String
+    implements java.io.Serializable, Comparable<String>, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+
+    /** Cache the hash code for the string */
+    private int hash; // Default to 0
+
+    /** use serialVersionUID from JDK 1.0.2 for interoperability */
+    private static final long serialVersionUID = -6849794470754667710L;
+}
+```
+## String常量和String对象
+JVM针对String类型有一个常量池（堆区），如果是字符串常量形式的声明首先会查看常量池中是否存在这个常量，如果存在就不会创建新的对象，否则在常量池中创建该字符串并创建引用。此后无论式创建多少个相同的字符串都是指向这一个地址的引用，而不再开辟新的地址空间。
+
+但对于字符串对象每次new都会在堆区形成一个新的内存区域并填充相应的字符串，不论堆区是否已经存在该字符串。
+
+从以下例子可以看出字符串常量不可修改，只是引用的位置更改了
+```
+String s1 = "abc";
+s1 += "d";
+System.out.println(s1); // "abcd" 
+// 内存中有"abc"，"abcd"两个对象，s1从指向"abc"，改变指向，指向了"abcd"。
+```
+
+## 字符串的比较
+```
+s1.equals(s2);             // 比较内容是否相等
+s1.equalsIgnoreCase(s2)    // 比较内容是否相等，忽略大小写
+
+System.out.println(s1 == s2); // 比较字符串对象地址是否相等
+```
+
+## 其他重要方法
+public int length () ：返回此字符串的长度。
+
+public String concat (String str) ：将指定的字符串连接到该字符串的末尾。
+
+public char charAt (int index) ：返回指定索引处的 char值。
+
+public int indexOf (String str) ：返回指定子字符串第一次出现在该字符串内的索引。
+
+public char[] toCharArray () ：将此字符串转换为新的字符数组。
+
+public String substring (int beginIndex, int endIndex) ：返回一个子字符串，从beginIndex到endIndex截取字符串。含beginIndex，不含endIndex。
+
+## StringBuilder(a mutable sequence of characters)
+```
+StringBuilder sb = new StringBuilder("Hello");
+
+sb.append(" World"); // 添加一个字符串或字符
+
+sb.insert(5, " World"); // 向某个index处插入字符串
+
+sb.delete(5, 11); // 删除一个子字符串
+
+sb.deleteCharAt(5);
+
+sb.reverse();
+
+String result = sb.toString(); // 转换为String
+```
+
 
 
 # Finally
