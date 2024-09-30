@@ -1,6 +1,6 @@
 ---
 layout: post
-title: LeetCode数组类题目笔记
+title: LeetCode数组类题目笔记（对撞指针，滑动窗口，二分查找）
 categories: LeetCode Notes
 description: LeetCode数组类题目笔记
 keywords: LeetCode Array
@@ -97,6 +97,35 @@ for (int i = 0; i < n; i++) {
 
 如果是要找下一个更小的元素，就用递增栈，这样每次遇到更小元素就弹出栈顶的元素直到栈顶元素小于新元素
 
+如果不是数组而是链表，无法追踪下标时，可以向栈中元素改为一个数组，手动记录并存储下标，如leetcode 1019：
+```
+class Solution {
+    public int[] nextLargerNodes(ListNode head) {
+        List<Integer> ans = new ArrayList<Integer>();
+        Deque<int[]> stack = new ArrayDeque<int[]>();
+
+        ListNode cur = head;
+        int idx = -1;
+        while (cur != null) {
+            ++idx;
+            ans.add(0);
+            while (!stack.isEmpty() && stack.peek()[0] < cur.val) {
+                ans.set(stack.pop()[1], cur.val);
+            }
+            stack.push(new int[]{cur.val, idx});
+            cur = cur.next;
+        }
+
+        int size = ans.size();
+        int[] arr = new int[size];
+        for (int i = 0; i < size; ++i) {
+            arr[i] = ans.get(i);
+        }
+        return arr;
+    }
+}
+```
+
 ## 例题：柱状图中最大矩形
 ![](/images/posts/lc84.png)
 
@@ -122,6 +151,126 @@ class Solution {
         return maxArea;
     }
 }
+```
+
+# 二分查找
+二分查找一般由三个主要部分组成：
+
+* 预处理：如果集合未排序，则进行排序。
+
+* 二分查找：使用循环或递归在每次比较后将查找空间划分为两半。
+
+* 后处理：在剩余空间中确定可行的候选者。
+
+## 模板一
+适用于需要查找某个满足条件的特定元素的时，该模板的特点是[left, right]组成一个闭区间，所以循环条件是while(left <= right)
+
+该模板不需要后处理，因为每一步中，我们都在检查是否找到了元素。如果到达末尾，则知道未找到该元素。
+```
+// 二分查找 --- [left, right]
+    // 数组已经是有序的了!
+    public static int binarySerach1(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0, right = nums.length-1;
+        while (left <= right) {
+            // 防止溢出 等同于(left + right)/2
+            int mid = left + (right-left)/2;
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) {
+                // target 在左区间，所以[left, middle - 1]
+                right = mid-1;
+            } else {
+                // target 在右区间，所以[middle + 1, right]
+                left = mid+1;
+            }
+        }
+
+        return -1;
+    }
+```
+
+## 模板二
+该模板适用于要查找第一个满足条件的元素时，每次比较的区间至少有两个元素，所以最终会剩下一个元素没有进行判断，有可能需要进行特殊处理或判断
+
+```
+// 二分查找 --- [left, right)
+    // 数组已经是有序的了!
+    int binarySearch2(int[] nums, int target){
+        if(nums == null || nums.length == 0)
+            return -1;
+        // 定义target在左闭右开的区间里，即：[left, right)
+        int left = 0, right = nums.length;
+        // 因为left == right的时候，在[left, right)是无效的空间，所以使用 <
+        while(left < right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] == target){
+                return mid;
+            }
+            else if(nums[mid] < target) {
+                //  target 在右区间，在[middle + 1, right)中
+                left = mid + 1;
+            }
+            else {
+                // target 在左区间，在[left, middle)中
+                right = mid;
+            }
+        }
+
+        // Post-processing:
+        // End Condition: left == right
+        if(left != nums.length && nums[left] == target) return left;
+        return -1;
+    }
+```
+
+注意，**模板二可用于寻找第一个比target大的元素**：
+```
+public int binarySearch(int[] arr, int x) {
+    int left = 0, right = arr.length - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] >= x) {
+            right = mid;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+```
+
+# 模板三
+ 
+ ```
+    // 二分查找 --- (left, right)
+    // 数组已经是有序的了!
+    int binarySearch3(int[] nums, int target) {
+        if (nums == null || nums.length == 0)
+            return -1;
+
+        int left = 0, right = nums.length - 1;
+        while (left + 1 < right){
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] < target) {
+                //  target 在右区间，在(middle, right)中
+                left = mid;
+            } else {
+                // target 在左区间，在(left, middle)中
+                right = mid;
+            }
+        }
+
+        // Post-processing:
+        // End Condition: left + 1 == right
+        if(nums[left] == target) return left;
+        if(nums[right] == target) return right;
+        return -1;
+    }
 ```
 
 
