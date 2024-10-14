@@ -149,6 +149,11 @@ queue.poll();
 queue.peek();
 ```
 
+检查元素是否存在：
+```
+boolean flag = queue.contains(root);
+```
+
 ## ArrayDeque与LinkedList区别
 1. ArrayDeque是基于**resizable array和双指针(头尾)**来实现，而LinkedList则通过链表来实现
 
@@ -156,3 +161,28 @@ queue.peek();
 
 3. ArrayDeque插入时可能存在扩容过程, 不过均摊后的插入操作依然为 O(1)。虽然LinkedList不需要扩容，但是每次插入数据时均需要申请新的堆空间，均摊性能相比更慢
 
+
+## PriorityQueue
+```
+PriorityQueue<Integer> minHeap = new PriorityQueue<Integer>(); //minheap，默认容量为11
+PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(11,new Comparator<Integer>(){ //maxheap，容量11
+    @Override
+    public int compare(Integer i1,Integer i2){
+        return i2-i1;
+    }
+});
+
+// 或者
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+
+
+PriorityQueue<Map.Entry<Integer, Integer>> minHeap = new PriorityQueue<>(
+    (a, b) -> a.getValue() - b.getValue()
+);
+
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+```
+
+对于k-largest问题，用minheap，堆顶元素是第k大的；
+
+对于k-smallest问题，用maxheap，堆顶元素是第k小的。
