@@ -47,6 +47,24 @@ int[] arr = {5, 2, 9, 1, 5, 6};
 Arrays.sort(arr, Collections.reverseOrder());
 ```
 
+## 数组自定义排序
+```
+Arrays.sort(intervals, new Comparator<int[]>() {
+    public int compare(int[] interval1, int[] interval2) {
+        return interval1[0] - interval2[0];
+    }
+});
+
+// Or
+Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+```
+
+## 寻找数组最大/最小值
+```
+int minNum = Arrays.stream(nums).min().getAsInt();
+int maxNum = Arrays.stream(nums).max().getAsInt();
+```
+
 # 双端队列deque
 ## deque初始化
 ```
@@ -114,6 +132,13 @@ public final class String
     private static final long serialVersionUID = -6849794470754667710L;
 }
 ```
+## String初始化
+可以直接用char数组初始化:
+```
+char[] s = Integer.toString(num).toCharArray();
+String str = new String(s);
+```
+
 ## String常量和String对象
 JVM针对String类型有一个常量池（堆区），如果是字符串常量形式的声明首先会查看常量池中是否存在这个常量，如果存在就不会创建新的对象，否则在常量池中创建该字符串并创建引用。此后无论式创建多少个相同的字符串都是指向这一个地址的引用，而不再开辟新的地址空间。
 
@@ -134,6 +159,14 @@ s1.equalsIgnoreCase(s2)    // 比较内容是否相等，忽略大小写
 
 System.out.println(s1 == s2); // 比较字符串对象地址是否相等
 ```
+
+## 字符串转Integer/Double
+```
+int x =Integer.parseInt("9");
+double c = Double.parseDouble("5");
+int b = Integer.parseInt("444",16);
+```
+
 
 ## 其他重要方法
 public int length () ：返回此字符串的长度。
@@ -272,3 +305,20 @@ ExecutorService executorService = Executors.newSingleThreadExecutor();
 ```
 ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 ```
+
+# JVM
+JVM是执行 Java 程序的虚拟计算机系统
+## JVM组成
+四大部分：Class Loader（类加载器），Runtime Data Area（运行时数据区，内存分区），Execution Engine（执行引擎），Native Interface（本地库接口）
+
+执行过程：首先需要准备好编译好的 Java 字节码文件（即class文件），计算机要运行程序需要先通过一定方式（类加载器）将 class 文件加载到内存中（运行时数据区），但是字节码文件是JVM定义的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解释器（执行引擎）将字节码翻译成特定的操作系统指令集交给 CPU 去执行，这个过程中会需要调用到一些不同语言为 Java 提供的接口（例如驱动、地图制作等），这就用到了本地 Native 接口（本地库接口）
+
+## 内存分布
+### 线程私有的
+* PC Register
+* JVM Stack: 每个线程创建一个私有的栈，用于存储局部变量、操作数栈、方法调用信息等。每个方法调用会创建一个新的栈帧，方法执行完后栈帧被销毁
+* Native Method Stack: 用于本地方法执行的栈，与 JVM 栈类似，但专门用于管理本地方法的调用
+
+### 线程共享的
+* Heap：JVM 中最大的内存区域，用于存储对象实例及其数据。堆可以是物理上不连续的空间，只要逻辑上是连续的即可
+* Method Area：存储已加载类的元数据（类结构信息）、常量池、静态变量、方法字节码等
